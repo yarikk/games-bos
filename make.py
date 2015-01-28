@@ -84,7 +84,7 @@ class Gcc(object):
   def cxx(self, target, source, flags=[]):
      cflags = flags + self.cflags
      target = self.oname(target)
-     return (self.cc, '-c', source, '-o', self.oname(target), cflags)
+     return (self.cc, '-c', source, '-o', target, cflags)
   def ld(self, target, sources, flags=[]):
      ldflags = flags + self.ldflags
      objects = [self.oname(s) for s in sources]
