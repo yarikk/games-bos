@@ -238,6 +238,8 @@ def pkgconfig(b, package):
         b.ldflags += cmdline2list(shell('pkg-config', '--libs', package).decode())
     except ExecutionError as e:
         return False
+    except OSError as e:
+        return False
     return True
 
 def CheckLib(b, lib, header=''):
