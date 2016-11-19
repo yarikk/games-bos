@@ -68,7 +68,7 @@ def listSvnFiles():
    return files
 
 def listFilesInDirectories():
-   raise "Not implemented"
+   raise RuntimeError("Not implemented")
 
 def listFiles():
    if isSvnWorkSpace():
