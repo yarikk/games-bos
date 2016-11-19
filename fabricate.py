@@ -306,7 +306,7 @@ class AtimesRunner(Runner):
                     os.close(handle)
                     raise
                 try:
-                    f.write('x')    # need a byte in the file for access test
+                    f.write(b'x')    # need a byte in the file for access test
                 finally:
                     f.close()
                 atimes = min(atimes, AtimesRunner.file_has_atimes(filename))
@@ -1003,10 +1003,8 @@ def main(globals_dict=None, build_dir=None, extra_options=None):
         is set to the parsed options list.
     """
     usage = '[options] build script functions to run'
-    parser, options, actions = parse_options(usage, extra_options)
+    parser, options, args = parse_options(usage, extra_options)
     main.options = options
-    if not actions:
-        actions = [default_command]
 
     original_path = os.getcwd()
     if None in [globals_dict, build_dir]:
@@ -1027,14 +1025,21 @@ def main(globals_dict=None, build_dir=None, extra_options=None):
             print("Entering directory '%s'" % build_dir)
         os.chdir(build_dir)
 
+    actions=[]
+    for i in args:
+        if '=' in i:
+            if not actions:
+               actions.append((default_command, {}))
+            k,v = i.split('=',1)
+            actions[-1][1][k]=v
+        else:
+            actions.append((i,{}))
     status = 0
     try:
         for action in actions:
-            if '(' not in action:
-                action = action.strip() + '()'
-            name = action.split('(')[0].split('.')[0]
-            if name in globals_dict:
-                this_status = eval(action, globals_dict)
+            if action[0] in globals_dict:
+                f=globals_dict[action[0]]
+                this_status = f(**action[1])
                 if this_status:
                     status = int(this_status)
             else:
