@@ -3,7 +3,7 @@
 #
 #  Build script for the Bos Wars engine.
 #
-#  (c) Copyright 2010-2013 by Francois Beerten.
+#  (c) Copyright 2010-2016 by Francois Beerten.
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -50,11 +50,17 @@ def find(startdir, pattern):
     
 sources = find('engine', '*.cpp')
 
+def tolist(x):
+    if isinstance(x, str):
+        return x.split(' ')
+    else:
+        return list(x)
+
 class Gcc(object):
   def __init__(self, cflags=[], ldflags=[], cc='g++', builddir='fbuild', 
                       usepkgconfig=True):
-     self.cflags = gccflags + list(cflags)
-     self.ldflags = list(ldflags)
+     self.cflags = gccflags + tolist(cflags)
+     self.ldflags = tolist(ldflags)
      self.cc = cc
      self.builddir = builddir
      self.usepkgconfig = usepkgconfig
