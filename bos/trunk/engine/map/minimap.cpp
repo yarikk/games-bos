@@ -202,7 +202,7 @@ CColor GetColor(CPatch *patch, int xoffset, int yoffset, int mx, int my, int sca
 	int x = (xoffset * TileSizeX + 7 + ((mx * SCALE_PRECISION) % scalex) / SCALE_PRECISION * 8);
 	int y = (yoffset * TileSizeY + 6 + ((my * SCALE_PRECISION) % scaley) / SCALE_PRECISION * 8);
 
-	Uint8 r, g, b, a;
+	Uint8 r = 0, g = 0, b = 0, a = 0;
 	SDL_Surface *s = patch->getType()->getGraphic()->Surface;
 	SDL_PixelFormat *f = s->format;
 
