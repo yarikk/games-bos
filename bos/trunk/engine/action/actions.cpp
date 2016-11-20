@@ -455,7 +455,7 @@ void UnitActions(void)
 		}
 	}
 
-	// 3) Increase health mana, burn and stuff
+	// 3) Increase health, charge, burn and stuff
 	if (regenthiscycle) {
 		for (i = 0; i < tabsize; ++i) {
 			if (table[i]->Destroyed) {

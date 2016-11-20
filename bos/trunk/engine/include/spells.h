@@ -9,7 +9,7 @@
 //
 /**@name spells.h - The Spells. */
 //
-//      (c) Copyright 1999-2007 by Vladi Belperchinov-Shabanski,
+//      (c) Copyright 1999-2016 by Vladi Belperchinov-Shabanski,
 //                                 Joris DAUPHIN, and Jimmy Salmon
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -121,13 +121,13 @@ public:
 */
 class SpellActionType {
 public:
-	SpellActionType(int mod = 0) : ModifyManaCaster(mod) {};
+	SpellActionType(int mod = 0) : ModifyChargeCaster(mod) {};
 	virtual ~SpellActionType() {};
 
 	virtual int Cast(CUnit *caster, const SpellType *spell,
 		CUnit *target, int x, int y) = 0;
 
-	const int ModifyManaCaster;
+	const int ModifyChargeCaster;
 };
 
 //
@@ -137,12 +137,12 @@ public:
 class AreaAdjustVitals : public SpellActionType
 {
 public:
-	AreaAdjustVitals() : HP(0), Mana(0) {};
+	AreaAdjustVitals() : HP(0), Charge(0) {};
 	virtual int Cast(CUnit *caster, const SpellType *spell,
 		CUnit *target, int x, int y);
 
 	int HP;         /// Target HP gain.(can be negative)
-	int Mana;       /// Target Mana gain.(can be negative)
+	int Charge;     /// Target charge gain.(can be negative)
 } ;
 
 class SpawnMissile : public SpellActionType {
@@ -206,12 +206,12 @@ public:
 
 class AdjustVitals : public SpellActionType {
 public:
-	AdjustVitals() : SpellActionType(1), HP(0), Mana(0), MaxMultiCast(0) {};
+	AdjustVitals() : SpellActionType(1), HP(0), Charge(0), MaxMultiCast(0) {};
 	virtual int Cast(CUnit *caster, const SpellType *spell,
 		CUnit *target, int x, int y);
 
 	int HP;         /// Target HP gain.(can be negative)
-	int Mana;       /// Target Mana gain.(can be negative)
+	int Charge;     /// Target Charge gain.(can be negative)
 	/// This spell is designed to be used wit very small amounts. The spell
 	/// can scale up to MaxMultiCast times. Use 0 for infinite.
 	int MaxMultiCast;
@@ -364,7 +364,7 @@ public:
 
 	int Range;                  /// Max range of the target.
 #define INFINITE_RANGE 0xFFFFFFF
-	int ManaCost;               /// Required mana for each cast.
+	int ChargeCost;             /// Required charge for each cast.
 	int RepeatCast;             /// If the spell will be cast again until out of targets.
 
 	int DependencyId;           /// Id of upgrade, -1 if no upgrade needed for cast the spell.
@@ -404,7 +404,7 @@ extern void CleanSpells(void);
 	/// return 1 if spell is availible, 0 if not (must upgrade)
 extern bool SpellIsAvailable(const CPlayer *player, int SpellId);
 
-	/// returns true if spell can be casted (enough mana, valid target)
+	/// returns true if spell can be casted (enough charge, valid target)
 extern bool CanCastSpell(const CUnit *caster, const SpellType *spell,
 	const CUnit *target, int x, int y);
 

@@ -410,7 +410,7 @@ public:
 enum {
 	HP_INDEX,
 	BUILD_INDEX,
-	MANA_INDEX,
+	CHARGE_INDEX,
 	TRANSPORT_INDEX,
 	TRAINING_INDEX,
 	GIVERESOURCE_INDEX,
@@ -454,7 +454,7 @@ public:
 	bool IsCenteredInY;         /// if true, use center of deco instead of upper border
 
 	bool ShowIfNotEnable;       /// if false, Show only if var is enable
-	bool ShowWhenMax;           /// if false, don't show if var is to max. (Like mana)
+	bool ShowWhenMax;           /// if false, don't show if var is to max. (Like charge)
 	bool ShowOnlySelected;      /// if true, show only for selected units.
 
 	bool HideNeutral;           /// if true, don't show for neutral unit.

@@ -909,9 +909,9 @@ extern void CleanUnits(void);
 // in unit_draw.cpp
 	/// Register CCL decorations features
 extern void DecorationCclRegister(void);
-	/// Load the decorations (health,mana) of units
+	/// Load the decorations (health,charge) of units
 extern void LoadDecorations(void);
-	/// Clean the decorations (health,mana) of units
+	/// Clean the decorations (health,charge) of units
 extern void CleanDecorations(void);
 
 	/// Draw unit's shadow

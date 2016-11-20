@@ -9,7 +9,7 @@
 //
 /**@name script_spell.cpp - The spell script functions.. */
 //
-//      (c) Copyright 1998-2007 by Joris Dauphin and Crestez Leonard
+//      (c) Copyright 1998-2016 by Joris Dauphin and Crestez Leonard
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -154,8 +154,8 @@ static SpellActionType *CclSpellAction(lua_State *l)
 			++j;
 			if (!strcmp(value, "hit-points")) {
 				spellaction->HP = LuaToNumber(l, -1, j + 1);
-			} else if (!strcmp(value, "mana-points")) {
-				spellaction->Mana = LuaToNumber(l, -1, j + 1);
+			} else if (!strcmp(value, "charge-points")) {
+				spellaction->Charge = LuaToNumber(l, -1, j + 1);
 			} else {
 				LuaError(l, "Unsupported area-adjust-vitals tag: %s" _C_ value);
 			}
@@ -365,8 +365,8 @@ static SpellActionType *CclSpellAction(lua_State *l)
 			++j;
 			if (!strcmp(value, "hit-points")) {
 				spellaction->HP = LuaToNumber(l, -1, j + 1);
-			} else if (!strcmp(value, "mana-points")) {
-				spellaction->Mana = LuaToNumber(l, -1, j + 1);
+			} else if (!strcmp(value, "charge-points")) {
+				spellaction->Charge = LuaToNumber(l, -1, j + 1);
 			} else if (!strcmp(value, "max-multi-cast")) {
 				spellaction->MaxMultiCast = LuaToNumber(l, -1, j + 1);
 			} else {
@@ -562,8 +562,8 @@ static int CclDefineSpell(lua_State *l)
 		++i;
 		if (!strcmp(value, "showname")) {
 			spell->Name = LuaToString(l, i + 1);
-		} else if (!strcmp(value, "manacost")) {
-			spell->ManaCost = LuaToNumber(l, i + 1);
+		} else if (!strcmp(value, "chargecost")) {
+			spell->ChargeCost = LuaToNumber(l, i + 1);
 		} else if (!strcmp(value, "range")) {
 			if (!lua_isstring(l, i + 1) && !lua_isnumber(l, i + 1)) {
 				LuaError(l, "incorrect argument");
