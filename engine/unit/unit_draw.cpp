@@ -59,7 +59,7 @@
 ----------------------------------------------------------------------------*/
 
 /**
-**  Decoration: health, mana.
+**  Decoration: health, charge.
 */
 class Decoration {
 public:

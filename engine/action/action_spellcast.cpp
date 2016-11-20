@@ -164,9 +164,9 @@ void HandleActionSpellCast(CUnit *unit)
 				//
 				// Notify player about this problem
 				//
-				if (unit->Variable[MANA_INDEX].Value < spell->ManaCost) {
+				if (unit->Variable[CHARGE_INDEX].Value < spell->ChargeCost) {
 					unit->Player->Notify(NotifyYellow, unit->X, unit->Y,
-						_("%s: not enough mana for spell: %s"),
+						_("%s: not charged enough for this action: %s"),
 						unit->Type->Name.c_str(), spell->Name.c_str());
 				} else {
 					unit->Player->Notify(NotifyYellow, unit->X, unit->Y,

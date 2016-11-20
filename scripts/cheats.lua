@@ -9,7 +9,7 @@
 --
 --      cheats.lua - Cheats
 --
---      (c) Copyright 2001-2007 by Lutz Sammer and Jimmy Salmon
+--      (c) Copyright 2001-2016 by Lutz Sammer and Jimmy Salmon
 --
 --      This program is free software; you can redistribute it and/or modify
 --      it under the terms of the GNU General Public License as published by
@@ -107,9 +107,9 @@ function HandleCheats(str)
     end
     Cheater = true
 
-  elseif (str == "fill mana") then
+  elseif (str == "full charge") then
     for i = 0,ThisPlayer.TotalNumUnits-1 do
-      SetUnitVariable(ThisPlayer.Units[i].Slot, "Mana", 999999)
+      SetUnitVariable(ThisPlayer.Units[i].Slot, "Charge", 999999)
     end
     Cheater = true
 

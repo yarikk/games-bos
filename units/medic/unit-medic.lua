@@ -71,7 +71,7 @@ DefineMissileType("missile-heal", {
 
 DefineSpell("spell-healing",
   "showname", "Bandage",
-  "manacost", 3,
+  "chargecost", 3,
   "range",  1,
   "target", "unit",
   "action", {
@@ -105,7 +105,7 @@ DefineUnitType("unit-medic", {
   EnergyValue = 2500,
   MagmaValue = 2000,
   HitPoints = 25,
-  MaxMana = 100,
+  MaxCharge = 100,
   CanCastSpell = {"spell-healing"},
   DrawLevel = 25,
   TileSize = {1, 1},

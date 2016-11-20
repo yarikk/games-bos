@@ -58,7 +58,7 @@
 ----------------------------------------------------------------------------*/
 
 // FIXME: make configurable
-#define MAGIC_FOR_NEW_UNITS  33         /// How many percent of max mana for new units
+#define CHARGE_FOR_NEW_UNITS  33         /// How many percent of max charge for new units
 
 /*----------------------------------------------------------------------------
 --  Variables
@@ -407,11 +407,11 @@ static int CclDefineUnitType(lua_State *l)
 			type->BurnPercent = LuaToNumber(l, -1);
 		} else if (!strcmp(value, "BurnDamageRate")) {
 			type->BurnDamageRate = LuaToNumber(l, -1);
-		} else if (!strcmp(value, "MaxMana")) {
-			type->Variable[MANA_INDEX].Max = LuaToNumber(l, -1);
-			type->Variable[MANA_INDEX].Value = (type->Variable[MANA_INDEX].Max * MAGIC_FOR_NEW_UNITS) / 100;
-			type->Variable[MANA_INDEX].Increase = 1;
-			type->Variable[MANA_INDEX].Enable = 1;
+		} else if (!strcmp(value, "MaxCharge")) {
+			type->Variable[CHARGE_INDEX].Max = LuaToNumber(l, -1);
+			type->Variable[CHARGE_INDEX].Value = (type->Variable[CHARGE_INDEX].Max * CHARGE_FOR_NEW_UNITS) / 100;
+			type->Variable[CHARGE_INDEX].Increase = 1;
+			type->Variable[CHARGE_INDEX].Enable = 1;
 		} else if (!strcmp(value, "TileSize")) {
 			LuaCheckTableSize(l, -1, 2);
 			type->TileWidth = LuaToNumber(l, -1, 1);
@@ -1202,7 +1202,7 @@ void UpdateUnitVariables(const CUnit *unit)
 	type = unit->Type;
 	for (int i = 0; i < NVARALREADYDEFINED; i++) { // default values
 		if (i == ARMOR_INDEX || i == PIERCINGDAMAGE_INDEX ||
-				i == BASICDAMAGE_INDEX || i == MANA_INDEX ||
+				i == BASICDAMAGE_INDEX || i == CHARGE_INDEX ||
 				i == KILL_INDEX || i == HP_INDEX) {
 			continue;
 		}
@@ -1297,7 +1297,7 @@ void UpdateUnitVariables(const CUnit *unit)
 */
 void InitDefinedVariables()
 {
-	const char *var[NVARALREADYDEFINED] = {"HitPoints", "Build", "Mana", "Transport",
+	const char *var[NVARALREADYDEFINED] = {"HitPoints", "Build", "Charge", "Transport",
 		"Training", "GiveResource", "Kill", "Armor", "SightRange",
 		"AttackRange", "PiercingDamage", "BasicDamage", "PosX", "PosY", "RadarRange",
 		"RadarJammerRange", "AutoRepairRange", "Slot"};

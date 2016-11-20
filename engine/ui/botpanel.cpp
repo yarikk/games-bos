@@ -486,7 +486,7 @@ void UpdateStatusLineForButton(const ButtonAction *button)
 			SetCosts(0, UnitTypes[button->Value]->ProductionCosts);
 			break;
 		case ButtonSpellCast:
-			SetCosts(SpellTypeTable[button->Value]->ManaCost, NULL);
+			SetCosts(SpellTypeTable[button->Value]->ChargeCost, NULL);
 			break;
 		default:
 			ClearCosts();

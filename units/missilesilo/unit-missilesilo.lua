@@ -80,7 +80,7 @@ DefineUnitType("unit-msilo", {
     DeathExplosion = largeExplosion,
     Corpse = "build-dead-msilo",
     Type = land,
-    MaxMana = 1000,
+    MaxCharge = 1000,
     CanCastSpell = {"spell-nuke"},
     Building = true,
     VisibleUnderFog = true,

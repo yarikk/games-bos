@@ -66,8 +66,8 @@ Preference.ShowAttackRange = false
 Preference.ShowReactionRange = false
 Preference.ShowOrders = 2
 
--- Mana and Health sprites
-DefineSprites({Name = "sprite-mana", File = "general/mana2.png",
+-- Charge and Health sprites
+DefineSprites({Name = "sprite-charge", File = "general/mana2.png",
   Offset = {0, -1}, Size = {31, 4}})
 DefineSprites({Name = "sprite-health", File = "general/health2.png",
   Offset = {0, -4}, Size = {31, 4}})
@@ -77,15 +77,15 @@ DefineDecorations({Index = "HitPoints", HideNeutral = true, CenterX = true,
   OffsetPercent = {50, 100}, Method = {"sprite", {"sprite-health"}},
   ShowWhenMax = false})
 
--- ManaDot
-DefineDecorations({Index = "Mana", HideNeutral = true, CenterX = true,
-  OffsetPercent = {50, 100},Method = {"sprite", {"sprite-mana"}},
+-- ChargeDot
+DefineDecorations({Index = "Charge", HideNeutral = true, CenterX = true,
+  OffsetPercent = {50, 100},Method = {"sprite", {"sprite-charge"}},
   ShowWhenMax = false})
 DefineDecorations({Index = "Transport", HideNeutral = true, CenterX = true,
-  OffsetPercent = {50, 100},Method = {"sprite", {"sprite-mana"}},
+  OffsetPercent = {50, 100},Method = {"sprite", {"sprite-charge"}},
   ShowWhenMax = false})
 DefineDecorations({Index = "Training", HideNeutral = true, CenterX = true,
-  OffsetPercent = {50, 100},Method = {"sprite", {"sprite-mana"}},
+  OffsetPercent = {50, 100},Method = {"sprite", {"sprite-charge"}},
   ShowWhenMax = false})
 
 -------------------------------------------------------------------------------

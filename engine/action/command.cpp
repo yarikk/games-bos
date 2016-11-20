@@ -880,7 +880,7 @@ void CommandSpellCast(CUnit *unit, int x, int y, CUnit *dest,
 	// Check if unit is still valid? (NETWORK!)
 	//
 	if (!unit->Removed && unit->Orders[0]->Action != UnitActionDie) {
-		// FIXME: should I check here, if there is still enough mana?
+		// FIXME: should I check here, if there is still enough charge ?
 
 		if (!(order = GetNextOrder(unit, flush))) {
 			return;

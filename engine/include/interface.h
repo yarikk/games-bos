@@ -341,7 +341,7 @@ extern void CleanMessages(void);
 	/// Draw costs in status line
 extern void DrawCosts(void);
 	/// Set costs to be displayed in status line
-extern void SetCosts(int mana, const int *costs);
+extern void SetCosts(int charge, const int *costs);
 	/// Clear the costs displayed in status line (undisplay!)
 extern void ClearCosts(void);
 

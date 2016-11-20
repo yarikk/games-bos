@@ -290,7 +290,7 @@ void GameMainLoop(void)
 			//
 			// Work todo each second.
 			// Split into different frames, to reduce cpu time.
-			// Increment mana of magic units.
+			// Increment charge of spell casting units.
 			// Update mini-map.
 			// Update map fog of war.
 			// Call AI.

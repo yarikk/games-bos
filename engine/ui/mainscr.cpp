@@ -135,22 +135,22 @@ static void UiDrawLifeBar(const CUnit *unit, int x, int y)
 }
 
 /**
-**  Draw mana bar of a unit at x,y.
+**  Draw charge bar of a unit at x,y.
 **  Placed under icons on top-panel.
 **
 **  @param unit  Pointer to unit.
 **  @param x     Screen X postion of icon
 **  @param y     Screen Y postion of icon
 */
-static void UiDrawManaBar(const CUnit *unit, int x, int y)
+static void UiDrawChargeBar(const CUnit *unit, int x, int y)
 {
 	// FIXME: add icon borders
 	y += unit->Type->Icon.Icon->G->Height;
 	Video.FillRectangleClip(ColorBlack, x, y + 3,
 		unit->Type->Icon.Icon->G->Width, 4);
 
-	if (unit->Stats->Variables[MANA_INDEX].Max) {
-		int f = (100 * unit->Variable[MANA_INDEX].Value) / unit->Variable[MANA_INDEX].Max;
+	if (unit->Stats->Variables[CHARGE_INDEX].Max) {
+		int f = (100 * unit->Variable[CHARGE_INDEX].Value) / unit->Variable[CHARGE_INDEX].Max;
 		f = (f * (unit->Type->Icon.Icon->G->Width)) / 100;
 		Video.FillRectangleClip(ColorBlue, x + 1, y + 3 + 1, f, 2);
 	}
@@ -199,11 +199,11 @@ static void DrawUnitStats(const CUnit *unit)
 		std::ostringstream damage;
 		damage << _("Damage: ") << min_damage << "-" << max_damage;
 		VideoDrawText(x + 16, y + 125, GameFont, damage.str());
-	} else if (unit->Variable[MANA_INDEX].Max != 0) {
-		// Mana
-		std::ostringstream mana;
-		mana << _("Mana: ") << unit->Variable[MANA_INDEX].Value;
-		VideoDrawText(x + 16, y + 111, GameFont, mana.str());
+	} else if (unit->Variable[CHARGE_INDEX].Max != 0) {
+		// Charge
+		std::ostringstream charge;
+		charge << _("Charge: ") << unit->Variable[CHARGE_INDEX].Value;
+		VideoDrawText(x + 16, y + 111, GameFont, charge.str());
 	}
 }
 
@@ -268,8 +268,8 @@ static void DrawTransportingUnits(const CUnit *unit)
 
 			UiDrawLifeBar(insideUnit, button->X, button->Y);
 
-			if (insideUnit->Type->CanCastSpell && insideUnit->Variable[MANA_INDEX].Max) {
-				UiDrawManaBar(insideUnit, button->X, button->Y);
+			if (insideUnit->Type->CanCastSpell && insideUnit->Variable[CHARGE_INDEX].Max) {
+				UiDrawChargeBar(insideUnit, button->X, button->Y);
 			}
 
 			if (mouseOver) {
@@ -779,7 +779,7 @@ void CStatusLine::Clear(void)
 --  COSTS
 ----------------------------------------------------------------------------*/
 
-static int CostsMana;                    /// mana cost to display in status line
+static int CostsCharge;                  /// charge cost to display in status line
 static int Costs[MaxCosts];              /// costs to display in status line
 
 /**
@@ -790,12 +790,12 @@ static int Costs[MaxCosts];              /// costs to display in status line
 void DrawCosts(void)
 {
 	int x = UI.StatusLine.TextX + 268;
-	if (CostsMana) {
+	if (CostsCharge) {
 		if (UI.Resources[EnergyCost].G->NumFrames >= 3) {
 			UI.Resources[EnergyCost].G->DrawFrameClip(2, x, UI.StatusLine.TextY);
 		}
 
-		VideoDrawNumber(x + 15, UI.StatusLine.TextY, GameFont, CostsMana);
+		VideoDrawNumber(x + 15, UI.StatusLine.TextY, GameFont, CostsCharge);
 		x += 60;
 	}
 
@@ -817,12 +817,12 @@ void DrawCosts(void)
 /**
 **  Set costs in status line.
 **
-**  @param mana   Mana costs.
+**  @param charge Charge costs.
 **  @param costs  Resource costs, NULL pointer if all are zero.
 */
-void SetCosts(int mana, const int *costs)
+void SetCosts(int charge, const int *costs)
 {
-	CostsMana = mana;
+	CostsCharge = charge;
 	if (costs) {
 		memcpy(Costs, costs, MaxCosts * sizeof(*costs));
 	} else {

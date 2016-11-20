@@ -9,7 +9,7 @@
 //
 /**@name spells.cpp - The spell cast action. */
 //
-//      (c) Copyright 1998-2008 by Vladi Belperchinov-Shabanski, Lutz Sammer,
+//      (c) Copyright 1998-2016 by Vladi Belperchinov-Shabanski, Lutz Sammer,
 //                                 Jimmy Salmon, and Joris DAUPHIN
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -166,7 +166,7 @@ int SpawnPortal::Cast(CUnit *caster, const SpellType *spell,
 	//  Goal is used to link to destination circle of power
 	caster->Goal = portal;
 	portal->RefsIncrease();
-	//FIXME: setting destination circle of power should use mana
+	//FIXME: setting destination circle of power should use charge
 	return 0;
 }
 
@@ -188,7 +188,6 @@ int AreaAdjustVitals::Cast(CUnit *caster, const SpellType *spell,
 	int nunits;
 	int j;
 	int hp;
-	int mana;
 
 	// Get all the units around the unit
 	nunits = UnitCache.Select(x - spell->Range,
@@ -197,8 +196,7 @@ int AreaAdjustVitals::Cast(CUnit *caster, const SpellType *spell,
 		y + spell->Range + caster->Type->Height,
 		units, UnitMax);
 	hp = this->HP;
-	mana = this->Mana;
-	caster->Variable[MANA_INDEX].Value -= spell->ManaCost;
+	caster->Variable[CHARGE_INDEX].Value -= spell->ChargeCost;
 	for (j = 0; j < nunits; ++j) {
 		target = units[j];
 // if (!PassCondition(caster, spell, target, x, y) {
@@ -213,12 +211,12 @@ int AreaAdjustVitals::Cast(CUnit *caster, const SpellType *spell,
 				target->Variable[HP_INDEX].Value = target->Variable[HP_INDEX].Max;
 			}
 		}
-		target->Variable[MANA_INDEX].Value += mana;
-		if (target->Variable[MANA_INDEX].Value < 0) {
-			target->Variable[MANA_INDEX].Value = 0;
+		target->Variable[CHARGE_INDEX].Value += Charge;
+		if (target->Variable[CHARGE_INDEX].Value < 0) {
+			target->Variable[CHARGE_INDEX].Value = 0;
 		}
-		if (target->Variable[MANA_INDEX].Value > target->Variable[MANA_INDEX].Max) {
-			target->Variable[MANA_INDEX].Value = target->Variable[MANA_INDEX].Max;
+		if (target->Variable[CHARGE_INDEX].Value > target->Variable[CHARGE_INDEX].Max) {
+			target->Variable[CHARGE_INDEX].Value = target->Variable[CHARGE_INDEX].Max;
 		}
 	}
 	return 0;
@@ -235,7 +233,7 @@ int AreaAdjustVitals::Cast(CUnit *caster, const SpellType *spell,
 **
 **  @return             =!0 if spell should be repeated, 0 if not
 **  @internal: vladi: blizzard differs than original in this way:
-**   original: launches 50 shards at 5 random spots x 10 for 25 mana.
+**   original: launches 50 shards at 5 random spots x 10 for 25 charge.
 */
 int AreaBombardment::Cast(CUnit *caster, const SpellType *spell,
 	CUnit *target, int x, int y)
@@ -438,10 +436,8 @@ int AdjustVitals::Cast(CUnit *caster, const SpellType *spell,
 {
 	int castcount;
 	int diffHP;
-	int diffMana;
+	int diffCharge;
 	int hp;
-	int mana;
-	int manacost;
 
 	Assert(caster);
 	Assert(spell);
@@ -450,8 +446,6 @@ int AdjustVitals::Cast(CUnit *caster, const SpellType *spell,
 	}
 
 	hp = this->HP;
-	mana = this->Mana;
-	manacost = spell->ManaCost;
 
 	//  Healing and harming
 	if (hp > 0) {
@@ -459,10 +453,10 @@ int AdjustVitals::Cast(CUnit *caster, const SpellType *spell,
 	} else {
 		diffHP = target->Variable[HP_INDEX].Value;
 	}
-	if (mana > 0) {
-		diffMana = target->Stats->Variables[MANA_INDEX].Max - target->Variable[MANA_INDEX].Value;
+	if (Charge > 0) {
+		diffCharge = target->Stats->Variables[CHARGE_INDEX].Max - target->Variable[CHARGE_INDEX].Value;
 	} else {
-		diffMana = target->Variable[MANA_INDEX].Value;
+		diffCharge = target->Variable[CHARGE_INDEX].Value;
 	}
 
 	//  When harming cast again to send the hp to negative values.
@@ -473,18 +467,18 @@ int AdjustVitals::Cast(CUnit *caster, const SpellType *spell,
 		castcount = std::max(castcount, diffHP / abs(hp) + (((hp < 0) &&
 			(diffHP % (-hp) > 0)) ? 1 : 0));
 	}
-	if (mana) {
-		castcount = std::max(castcount, diffMana / abs(mana) + (((mana < 0) &&
-			(diffMana % (-mana) > 0)) ? 1 : 0));
+	if (Charge) {
+		castcount = std::max(castcount, diffCharge / abs(Charge) + (((Charge < 0) &&
+			(diffCharge % (-Charge) > 0)) ? 1 : 0));
 	}
-	if (manacost) {
-		castcount = std::min(castcount, caster->Variable[MANA_INDEX].Value / manacost);
+	if (spell->ChargeCost) {
+		castcount = std::min(castcount, caster->Variable[CHARGE_INDEX].Value / spell->ChargeCost);
 	}
 	if (this->MaxMultiCast) {
 		castcount = std::min(castcount, this->MaxMultiCast);
 	}
 
-	caster->Variable[MANA_INDEX].Value -= castcount * manacost;
+	caster->Variable[CHARGE_INDEX].Value -= castcount * spell->ChargeCost;
 	if (hp < 0) {
 		HitUnit(caster, target, -(castcount * hp));
 	} else {
@@ -493,12 +487,12 @@ int AdjustVitals::Cast(CUnit *caster, const SpellType *spell,
 			target->Variable[HP_INDEX].Value = target->Variable[HP_INDEX].Max;
 		}
 	}
-	target->Variable[MANA_INDEX].Value += castcount * mana;
-	if (target->Variable[MANA_INDEX].Value < 0) {
-		target->Variable[MANA_INDEX].Value = 0;
+	target->Variable[CHARGE_INDEX].Value += castcount * Charge;
+	if (target->Variable[CHARGE_INDEX].Value < 0) {
+		target->Variable[CHARGE_INDEX].Value = 0;
 	}
-	if (target->Variable[MANA_INDEX].Value > target->Variable[MANA_INDEX].Max) {
-		target->Variable[MANA_INDEX].Value = target->Variable[MANA_INDEX].Max;
+	if (target->Variable[CHARGE_INDEX].Value > target->Variable[CHARGE_INDEX].Max) {
+		target->Variable[CHARGE_INDEX].Value = target->Variable[CHARGE_INDEX].Max;
 	}
 
 	return 0;
@@ -553,7 +547,7 @@ int Polymorph::Cast(CUnit *caster, const SpellType *spell,
 			}
 		}
 	}
-	caster->Variable[MANA_INDEX].Value -= spell->ManaCost;
+	caster->Variable[CHARGE_INDEX].Value -= spell->ChargeCost;
 	if (this->PlayerNeutral) {
 		MakeUnitAndPlace(x, y, type, Players + PlayerNumNeutral);
 	} else {
@@ -615,7 +609,7 @@ int Capture::Cast(CUnit *caster, const SpellType *spell,
 		UnitLost(caster);
 		UnitClearOrders(caster);
 	} else {
-		caster->Variable[MANA_INDEX].Value -= spell->ManaCost;
+		caster->Variable[CHARGE_INDEX].Value -= spell->ChargeCost;
 	}
 	UnitClearOrders(target);
 	return 0;
@@ -687,7 +681,7 @@ int Summon::Cast(CUnit *caster, const SpellType *spell,
 				target->TTL = GameCycle + ttl;
 			}
 
-			caster->Variable[MANA_INDEX].Value -= spell->ManaCost;
+			caster->Variable[CHARGE_INDEX].Value -= spell->ChargeCost;
 		} else {
 			DebugPrint("Unable to allocate Unit");
 		}
@@ -746,7 +740,7 @@ static Target *NewTargetPosition(int x, int y)
 static bool PassCondition(const CUnit *caster, const SpellType *spell, const CUnit *target,
 	int x, int y, const ConditionInfo *condition)
 {
-	if (caster->Variable[MANA_INDEX].Value < spell->ManaCost) { // Check caster mana.
+	if (caster->Variable[CHARGE_INDEX].Value < spell->ChargeCost) { // Check caster Charge.
 		return false;
 	}
 	if (spell->Target == TargetUnit) { // Casting a unit spell without a target.
@@ -903,7 +897,7 @@ static Target *SelectTargetUnitsOfAutoCast(CUnit *caster, const SpellType *spell
 			//  Autocast with a position? That's hard
 			//  Possibilities: cast reveal-map on a dark region
 			//  Cast raise dead on a bunch of corpses. That would rule.
-			//  Cast summon until out of mana in the heat of battle. Trivial?
+			//  Cast summon until out of charge in the heat of battle. Trivial?
 			//  Find a tight group of units and cast area-damage spells. HARD,
 			//  but it is a must-have for AI. What about area-heal?
 		case TargetUnit:
@@ -1037,9 +1031,9 @@ int AutoCastSpell(CUnit *caster, const SpellType *spell)
 {
 	Target *target;
 
-	//  Check for mana, trivial optimization.
+	//  Check for Charge, trivial optimization.
 	if (!SpellIsAvailable(caster->Player, spell->Slot)
-		|| caster->Variable[MANA_INDEX].Value < spell->ManaCost) {
+		|| caster->Variable[CHARGE_INDEX].Value < spell->ChargeCost) {
 		return 0;
 	}
 	target = SelectTargetUnitsOfAutoCast(caster, spell);
@@ -1070,7 +1064,7 @@ int SpellCast(CUnit *caster, const SpellType *spell, CUnit *target,
 	int x, int y)
 {
 	int cont;             // Should we recast the spell.
-	int mustSubtractMana; // false if action which have their own calculation is present.
+	int mustSubtractCharge; // false if action which have their own calculation is present.
 
 	if (target) {
 		int xa;
@@ -1093,26 +1087,26 @@ int SpellCast(CUnit *caster, const SpellType *spell, CUnit *target,
 		caster->Type->Name.c_str() _C_ target ? target->Type->Name.c_str() : "none" _C_ x _C_ y);
 	if (CanCastSpell(caster, spell, target, x, y)) {
 		cont = 1;
-		mustSubtractMana = 1;
+		mustSubtractCharge = 1;
 		//
-		//  Ugly hack, CastAdjustVitals makes it's own mana calculation.
+		//  Ugly hack, CastAdjustVitals makes it's own charge calculation.
 		//
 		PlayGameSound(spell->SoundWhenCast.Sound, MaxSampleVolume);
 		for (std::vector<SpellActionType*>::const_iterator act = spell->Action.begin();
 			act != spell->Action.end();	++act) {
-			if ((*act)->ModifyManaCaster) {
-				mustSubtractMana = 0;
+			if ((*act)->ModifyChargeCaster) {
+				mustSubtractCharge = 0;
 			}
 			cont = cont & (*act)->Cast(caster, spell, target, x, y);
 		}
-		if (mustSubtractMana) {
-			caster->Variable[MANA_INDEX].Value -= spell->ManaCost;
+		if (mustSubtractCharge) {
+			caster->Variable[CHARGE_INDEX].Value -= spell->ChargeCost;
 		}
 		//
 		// Spells like blizzard are casted again.
 		// This is sort of confusing, we do the test again, to
 		// check if it will be possible to cast again. Otherwise,
-		// when you're out of mana the caster will try again ( do the
+		// when you're out of Charge the caster will try again ( do the
 		// anim but fail in this proc.
 		//
 		if (spell->RepeatCast && cont) {
@@ -1131,7 +1125,7 @@ int SpellCast(CUnit *caster, const SpellType *spell, CUnit *target,
 */
 SpellType::SpellType(int slot, const std::string &ident) :
 	Ident(ident), Slot(slot), Target(), Action(),
-	Range(0), ManaCost(0), RepeatCast(0),
+	Range(0), ChargeCost(0), RepeatCast(0),
 	DependencyId(-1), Condition(NULL),
 	AutoCast(NULL), AICast(NULL)
 {
